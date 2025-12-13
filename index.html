@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>APP PRESSET - Estoque</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>APP PRESSET</h1>
+    </header>
+
+    <!-- TELA 1 - LOGIN -->
+    <main id="page-login" class="page active">
+      <div class="login-box">
+        <div class="form-group">
+          <label for="input-nome">Nome do usuário</label>
+          <input type="text" id="input-nome" placeholder="Nome e sobrenome" />
+        </div>
+
+        <div class="form-group">
+          <label for="input-setor">Setor</label>
+          <select id="input-setor">
+            <option value="">Selecione o setor</option>
+            <option value="Presset">Presset</option>
+            <option value="Torno">Torno</option>
+            <option value="Usinagem">Usinagem</option>
+            <option value="Qualidade">Qualidade</option>
+            <option value="Almoxarifado">Almoxarifado</option>
+            <option value="Eng de Produto">Eng de Produto</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="input-turno">Turno</label>
+          <select id="input-turno">
+            <option value="">Selecione o turno</option>
+            <option value="1º Turno">1º Turno</option>
+            <option value="2º Turno">2º Turno</option>
+            <option value="3º Turno">3º Turno</option>
+            <option value="Comercial">Comercial</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="input-senha">Senha</label>
+          <input type="password" id="input-senha" placeholder="Digite sua senha" />
+          <small class="help-text">
+            Apenas administradores conseguem ver o botão <strong>Abastecer estoque</strong>.
+          </small>
+        </div>
+
+        <button id="btn-login" class="primary-btn">Entrar</button>
+        <button id="btn-criar-conta" class="secondary-btn">Criar conta</button>
+      </div>
+    </main>
+
+    <!-- TELA 2 - MENU PRINCIPAL DE ESTOQUE -->
+    <main id="page-home" class="page">
+      <div class="top-bar-home">
+        <div class="user-info">
+          <span id="user-name-text"></span>
+          <small id="user-extra-text"></small>
+        </div>
+        <button id="btn-logout" class="logout-btn">Sair</button>
+      </div>
+
+      <p class="section-title">Selecione uma categoria</p>
+
+      <div class="buttons-grid">
+        <button class="main-btn" data-target="page-parafusos">Parafusos</button>
+        <button class="main-btn" data-target="page-conexoes">Conexões</button>
+        <button class="main-btn" data-target="page-ferramentas">Ferramentas</button>
+        <button class="main-btn" data-target="page-filtros">Filtros</button>
+      </div>
+
+      <button id="btn-abastecer" class="secondary-btn" style="display:none;">
+        Abastecer estoque
+      </button>
+
+      <button id="btn-admins" class="secondary-btn" style="display:none; margin-top: 8px;">
+        Gerenciar administradores
+      </button>
+    </main>
+
+    <!-- TELA - ABASTECER ESTOQUE (SÓ ADMIN/MASTER) -->
+    <main id="page-abastecer" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Abastecer estoque</h2>
+      </div>
+      <p class="info-text">
+        Informe as quantidades para <strong>abastecer</strong> o estoque. Os valores serão somados ao saldo atual.
+      </p>
+      <div id="abastecer-container"></div>
+      <button id="btn-salvar-abastecimento" class="action-btn">
+        Salvar abastecimento
+      </button>
+    </main>
+
+    <!-- TELA - PARAFUSOS -->
+    <main id="page-parafusos" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Parafusos</h2>
+      </div>
+      <div class="items-list" data-category="parafusos"></div>
+      <button class="action-btn" data-category="parafusos">Retirar</button>
+    </main>
+
+    <!-- TELA - CONEXÕES -->
+    <main id="page-conexoes" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Conexões</h2>
+      </div>
+      <div class="items-list" data-category="conexoes"></div>
+      <button class="action-btn" data-category="conexoes">Retirar</button>
+    </main>
+
+    <!-- TELA - FERRAMENTAS -->
+    <main id="page-ferramentas" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Ferramentas</h2>
+      </div>
+      <div class="items-list" data-category="ferramentas"></div>
+      <button class="action-btn" data-category="ferramentas">Retirar</button>
+    </main>
+
+    <!-- TELA - FILTROS -->
+    <main id="page-filtros" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Filtros</h2>
+      </div>
+      <div class="items-list" data-category="filtros"></div>
+      <button class="action-btn" data-category="filtros">Retirar</button>
+    </main>
+
+    <!-- TELA - GERENCIAMENTO DE ADMINS (SÓ MASTER) -->
+    <main id="page-admins" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Administradores</h2>
+      </div>
+
+      <div class="admin-section">
+        <h3>Cadastrar novo administrador</h3>
+        <div class="form-group">
+          <label for="admin-nome">Nome do admin</label>
+          <input type="text" id="admin-nome" placeholder="Ex: João" />
+        </div>
+        <div class="form-group">
+          <label for="admin-senha">Senha do admin</label>
+          <input type="password" id="admin-senha" placeholder="Senha" />
+        </div>
+        <button id="btn-add-admin" class="primary-btn">Cadastrar admin</button>
+      </div>
+
+      <div class="admin-section">
+        <h3>Admins cadastrados</h3>
+        <ul id="admin-list" class="admin-list"></ul>
+        <small class="help-text">
+          Apenas o usuário MASTER consegue ver e editar esta tela.
+        </small>
+      </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <!-- Firebase SDKs (CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Seu app -->
+  <script src="app.js"></script>
+</body>
+</html>
