@@ -1,0 +1,402 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background: #ffffff;
+  color: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* CABEÇALHO GERAL */
+
+.app-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.app-header h1 {
+  font-size: 1.6rem;
+  color: #043058;
+}
+
+/* PÁGINAS */
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* LOGIN */
+
+.login-box {
+  background: #043058;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #301f33;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: #e5e7eb;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.95rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #043058;
+}
+
+.help-text {
+  font-size: 0.75rem;
+  color: #ff0000;
+}
+
+.primary-btn {
+  margin-top: 4px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+}
+
+.primary-btn:hover {
+  background: #041368d5;
+  box-shadow: 0 8px 16px rgb(255, 255, 255);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* TOPO DA HOME (DEPOIS DO LOGIN) */
+
+.top-bar-home {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  color: #000000;
+}
+
+#user-name-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+#user-extra-text {
+  font-size: 0.8rem;
+  color: #000000;
+}
+
+.logout-btn {
+  background: transparent;
+  border-radius: 999px;
+  border: 1px solid #ff0000;
+  color: #ff0000;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* TÍTULO DA SEÇÃO */
+
+.section-title {
+  font-size: 0.9rem;
+  color: #000000;
+  margin-bottom: 8px;
+}
+
+/* BOTÕES DA TELA PRINCIPAL */
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.main-btn {
+  background: #043058;
+  border: 1px solid #000000;
+  color: #ffffff;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+}
+
+.main-btn:hover {
+  background: #ffffff;
+  box-shadow: 0 8px 16px rgba(4, 40, 87, 0.8);
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #000000;
+  background: #043058;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* TOPO DAS TELAS INTERNAS (PARAFUSOS, ETC.) */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.top-bar h2 {
+  flex: 1;
+  text-align: center;
+  font-size: 1.3rem;
+  color: #043058;
+  margin-right: 28px;
+}
+
+.back-btn {
+  position: absolute;
+  left: 0;
+  background: transparent;
+  border: none;
+  color: #043058;
+  font-size: 1.4rem;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+/* LISTA DE ITENS */
+
+.items-list {
+  max-height: 55vh;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 4px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+}
+
+.item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item-label {
+  font-size: 0.95rem;
+}
+
+.stock-text {
+  font-size: 0.75rem;
+  color: #043058;
+}
+
+.stock-low {
+  color: #fc0000;
+  font-weight: 600;
+}
+
+/* INPUT DE QUANTIDADE */
+
+.item-input input {
+  width: 90px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-size: 1rem;
+}
+
+.item-input input:focus {
+  outline: none;
+  border-color: #38bdf8;
+}
+
+/* BOTÃO RETIRAR / ABASTECER */
+
+.action-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #043058;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+}
+
+.action-btn:hover {
+  background: #fcfcfc;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+/* TEXTO SIMPLES NA TELA DE ABASTECER */
+
+.info-text {
+  font-size: 0.9rem;
+  color: #ff0000;
+  margin-bottom: 8px;
+}
+
+/* AREA DE ABASTECER - AGRUPANDO POR CATEGORIA */
+
+.abastecer-section {
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+  background: #020617;
+}
+
+.abastecer-section h3 {
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #e5e7eb;
+}
+
+/* AREA DE ADMINS */
+
+.admin-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  background: #020617;
+}
+
+.admin-section h3 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.admin-list {
+  list-style: none;
+  margin-top: 8px;
+}
+
+.admin-list li {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+  font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.admin-tag {
+  font-size: 0.7rem;
+  color: #9cafa4;
+}
+
+/* TOAST / MENSAGEM */
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #e5e7eb;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid #513750;
+  font-size: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* AJUSTES PARA CELULAR */
+
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  .app-container {
+    border-radius: 12px;
+    padding: 12px;
+  }
+}
