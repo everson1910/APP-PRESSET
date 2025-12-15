@@ -400,3 +400,7 @@ body {
     padding: 12px;
   }
 }
+/* ==== BLOQUEAR "PUXAR PARA RECARREGAR" (PULL-TO-REFRESH) ==== */
+html, body {
+  overscroll-behavior-y: none; /* Chrome/Android e vários WebViews */
+}

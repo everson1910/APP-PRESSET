@@ -927,4 +927,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   const last = sessionStorage.getItem("lastPage") || "page-login";
   navigateTo(last);
 });
+// ==== BLOQUEAR PULL-TO-REFRESH (principalmente no Android WebView e iOS) ====
+(function preventPullToRefresh() {
+  let startY = 0;
+
+  window.addEventListener("touchstart", (e) => {
+    if (!e.touches || e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (e) => {
+    if (!e.touches || e.touches.length !== 1) return;
+
+    const currentY = e.touches[0].clientY;
+    const diffY = currentY - startY;
+
+    // elemento de scroll padrão da página
+    const scroller = document.scrollingElement || document.documentElement;
+
+    // Se estiver no topo e arrastando para baixo -> bloqueia o "refresh"
+    if (scroller.scrollTop <= 0 && diffY > 0) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+})();
 
