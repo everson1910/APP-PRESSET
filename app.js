@@ -897,8 +897,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupRetirarButtons();
   setupAbastecerLogic();
 
+  // garante auth anônimo logo ao abrir
   try { await ensureAnonAuth(); } catch (e) { console.error(e); }
 
+  // inicia listener do estoque (apenas 1 vez)
   startStockListener();
 
   // 🔥 RESTAURA A ÚLTIMA PÁGINA
@@ -906,32 +908,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   navigateTo(last);
 });
 
-  // garante auth anônimo logo ao abrir
-  try { await ensureAnonAuth(); } catch (e) { console.error(e); }
-
-  // não inicia listener aqui (sem permissão antes do login)
-  // startStockListener();
-  
-  //  Bloqueia pull-to-refresh (web + PWA + WebView)
-(function disablePullToRefresh() {
-  let startY = 0;
-
-  document.addEventListener("touchstart", (e) => {
-    if (e.touches.length === 1) startY = e.touches[0].clientY;
-  }, { passive: true });
-
-  document.addEventListener("touchmove", (e) => {
-    const currentY = e.touches[0].clientY;
-
-    // Se estiver no topo e puxar pra baixo, bloqueia refresh
-    if (window.scrollY === 0 && currentY > startY) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-})();
-  startStockListener();
-
-// ==== BLOQUEAR PULL-TO-REFRESH (principalmente no Android WebView e iOS) ====
+// ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
 (function preventPullToRefresh() {
   let startY = 0;
 
@@ -946,7 +923,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentY = e.touches[0].clientY;
     const diffY = currentY - startY;
 
-    // elemento de scroll padrão da página
     const scroller = document.scrollingElement || document.documentElement;
 
     // Se estiver no topo e arrastando para baixo -> bloqueia o "refresh"
@@ -955,4 +931,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }, { passive: false });
 })();
+
 
