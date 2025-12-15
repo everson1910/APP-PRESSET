@@ -28,7 +28,7 @@ let currentUser = null;
 let currentProfile = null;
 let estoque = {};
 
-// ✅ controla listener do estoque
+//  controla list do estoque
 let unsubscribeStock = null;
 
 // ====== ITENS DE ESTOQUE ======
@@ -276,9 +276,16 @@ function getStock(code) {
 function navigateTo(pageId) {
   const pages = document.querySelectorAll(".page");
   pages.forEach((p) => p.classList.remove("active"));
+
   const page = document.getElementById(pageId);
   if (page) page.classList.add("active");
+
+  // 🔐 salva última página (evita voltar pro login no reload)
+  try {
+    sessionStorage.setItem("lastPage", pageId);
+  } catch {}
 }
+
 
 // ====== UI (HOME) ======
 function applyProfileToHome() {
@@ -713,7 +720,7 @@ function renderAbastecerPage() {
 
 // ====== FIRESTORE STOCK (REALTIME) ======
 function startStockListener() {
-  // ✅ se já tinha listener, derruba antes
+  //  se já tinha listener, derruba antes
   try { if (unsubscribeStock) unsubscribeStock(); } catch {}
   unsubscribeStock = null;
 
@@ -895,8 +902,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   // garante auth anônimo logo ao abrir
   try { await ensureAnonAuth(); } catch (e) { console.error(e); }
 
-  // ❌ não inicia listener aqui (sem permissão antes do login)
+  // não inicia listener aqui (sem permissão antes do login)
   // startStockListener();
+  
+  //  Bloqueia pull-to-refresh (web + PWA + WebView)
+(function disablePullToRefresh() {
+  let startY = 0;
 
-  navigateTo("page-login");
+  document.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener("touchmove", (e) => {
+    const currentY = e.touches[0].clientY;
+
+    // Se estiver no topo e puxar pra baixo, bloqueia refresh
+    if (window.scrollY === 0 && currentY > startY) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+})();
+  startStockListener();
+
+  const last = sessionStorage.getItem("lastPage") || "page-login";
+  navigateTo(last);
 });
+
