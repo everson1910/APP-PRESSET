@@ -891,13 +891,20 @@ function showToast(message) {
 document.addEventListener("DOMContentLoaded", async () => {
   setupFirebaseAuth();
   setupLoginButtons();
-
   setupAdminsLogic();
-
   setupNavigation();
   renderAllCategories();
   setupRetirarButtons();
   setupAbastecerLogic();
+
+  try { await ensureAnonAuth(); } catch (e) { console.error(e); }
+
+  startStockListener();
+
+  // 🔥 RESTAURA A ÚLTIMA PÁGINA
+  const last = sessionStorage.getItem("lastPage") || "page-login";
+  navigateTo(last);
+});
 
   // garante auth anônimo logo ao abrir
   try { await ensureAnonAuth(); } catch (e) { console.error(e); }
@@ -924,9 +931,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 })();
   startStockListener();
 
-  const last = sessionStorage.getItem("lastPage") || "page-login";
-  navigateTo(last);
-});
 // ==== BLOQUEAR PULL-TO-REFRESH (principalmente no Android WebView e iOS) ====
 (function preventPullToRefresh() {
   let startY = 0;
