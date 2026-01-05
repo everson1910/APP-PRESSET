@@ -1,16 +1,18 @@
 const CACHE_NAME = "presset-v3";
 
-const STATIC_CACHE = [
+const FILES_TO_CACHE = [
   "/APP-PRESSET/",
+  "/APP-PRESSET/index.html",
   "/APP-PRESSET/style.css",
+  "/APP-PRESSET/app.js",
   "/APP-PRESSET/manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_CACHE))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
   );
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -27,30 +29,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
-
-  // 🔥 HTML e JS → sempre tentar rede primeiro
-  if (
-    request.destination === "document" ||
-    request.destination === "script"
-  ) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, response.clone());
-            return response;
-          });
-        })
-        .catch(() => caches.match(request))
-    );
-    return;
-  }
-
-  // 📦 Outros arquivos → cache first
   event.respondWith(
-    caches.match(request).then((response) => {
-      return response || fetch(request);
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
     })
   );
 });
+
