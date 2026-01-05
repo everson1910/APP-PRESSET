@@ -1,6 +1,6 @@
-console.log("APP JS carregou ✅");
+console.log("APP JS carregou");
 
-// 🔥 Firebase config
+//  Firebase 
 const firebaseConfig = {
   apiKey: "AIzaSyB3_xVNQwXHvDdz_iSVKZcJzdVdwpJczm4",
   authDomain: "app-preset-estoque.firebaseapp.com",
@@ -280,12 +280,11 @@ function navigateTo(pageId) {
   const page = document.getElementById(pageId);
   if (page) page.classList.add("active");
 
-  // 🔐 salva última página (evita voltar pro login no reload)
+  // salva a última página (use localStorage para não perder no reload)
   try {
-    sessionStorage.setItem("lastPage", pageId);
+    localStorage.setItem("lastPage", pageId);
   } catch {}
 }
-
 
 // ====== UI (HOME) ======
 function applyProfileToHome() {
@@ -904,8 +903,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   startStockListener();
 
   // 🔥 RESTAURA A ÚLTIMA PÁGINA
-  const last = sessionStorage.getItem("lastPage") || "page-login";
-  navigateTo(last);
+  const last = localStorage.getItem("lastPage") || "page-login";
+navigateTo(last);
+
 });
 
 // ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
