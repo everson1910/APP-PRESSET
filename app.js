@@ -886,43 +886,9 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-
-// ==== PREVENT PULL-TO-REFRESH (evita reload ao puxar para baixo no topo) ====
-function setupPreventPullToRefresh() {
-  let startY = 0;
-
-  window.addEventListener(
-    "touchstart",
-    (e) => {
-      if (!e.touches || e.touches.length !== 1) return;
-      startY = e.touches[0].clientY;
-    },
-    { passive: true }
-  );
-
-  window.addEventListener(
-    "touchmove",
-    (e) => {
-      if (!e.touches || e.touches.length !== 1) return;
-
-      const y = e.touches[0].clientY;
-      const pullingDown = y > startY + 5;
-
-      const scroller = document.scrollingElement || document.documentElement;
-      const atTop = (scroller?.scrollTop || 0) === 0;
-
-      if (pullingDown && atTop) {
-        e.preventDefault(); // bloqueia o gesto de refresh
-      }
-    },
-    { passive: false }
-  );
-}
-
 // ====== BOOT ======
 document.addEventListener("DOMContentLoaded", async () => {
-    setupPreventPullToRefresh();
-setupFirebaseAuth();
+  setupFirebaseAuth();
   setupLoginButtons();
   setupAdminsLogic();
   setupNavigation();
@@ -944,25 +910,50 @@ setupFirebaseAuth();
 // ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
 (function preventPullToRefresh() {
   let startY = 0;
+  let activeScroller = null;
 
-  window.addEventListener("touchstart", (e) => {
-    if (!e.touches || e.touches.length !== 1) return;
-    startY = e.touches[0].clientY;
-  }, { passive: true });
+  function getScrollable(el) {
+    let node = el;
+    while (node && node !== document.body && node !== document.documentElement) {
+      const style = window.getComputedStyle(node);
+      const overflowY = style.overflowY;
+      const isScrollable =
+        (overflowY === "auto" || overflowY === "scroll") &&
+        node.scrollHeight > node.clientHeight + 1;
 
-  window.addEventListener("touchmove", (e) => {
-    if (!e.touches || e.touches.length !== 1) return;
-
-    const currentY = e.touches[0].clientY;
-    const diffY = currentY - startY;
-
-    const scroller = document.scrollingElement || document.documentElement;
-
-    // Se estiver no topo e arrastando para baixo -> bloqueia o "refresh"
-    if (scroller.scrollTop <= 0 && diffY > 0) {
-      e.preventDefault();
+      if (isScrollable) return node;
+      node = node.parentElement;
     }
-  }, { passive: false });
-})();
+    return document.scrollingElement || document.documentElement;
+  }
+
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      startY = e.touches[0].clientY;
+      activeScroller = getScrollable(e.target);
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+
+      const currentY = e.touches[0].clientY;
+      const diffY = currentY - startY;
+
+      const scroller = activeScroller || getScrollable(e.target);
+
+      // Se o usuário estiver no topo do scroll atual e puxar para baixo -> bloqueia o "refresh"
+      if (diffY > 0 && (scroller?.scrollTop ?? 0) <= 0) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+})();;
 
 

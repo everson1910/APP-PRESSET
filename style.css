@@ -229,6 +229,7 @@ body {
   overflow-y: auto;
   margin-bottom: 12px;
   padding-right: 4px;
+  overscroll-behavior: contain;
 }
 
 .item-row {
