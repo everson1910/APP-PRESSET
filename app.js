@@ -1,6 +1,6 @@
-console.log("APP JS carregou");
+console.log("APP JS carregou ✅");
 
-//  Firebase 
+// 🔥 Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyB3_xVNQwXHvDdz_iSVKZcJzdVdwpJczm4",
   authDomain: "app-preset-estoque.firebaseapp.com",
@@ -888,6 +888,7 @@ function showToast(message) {
 
 // ====== BOOT ======
 document.addEventListener("DOMContentLoaded", async () => {
+  setupPreventPullToRefresh();
   setupFirebaseAuth();
   setupLoginButtons();
   setupAdminsLogic();
@@ -903,9 +904,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   startStockListener();
 
   // 🔥 RESTAURA A ÚLTIMA PÁGINA
-  const last = localStorage.getItem("lastPage") || "page-login";
-navigateTo(last);
-
+  const last = sessionStorage.getItem("lastPage") || "page-login";
+  navigateTo(last);
 });
 
 // ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
@@ -933,3 +933,25 @@ navigateTo(last);
 })();
 
 
+
+// ====== UX: evitar pull-to-refresh (recarregar ao puxar para baixo) ======
+function setupPreventPullToRefresh() {
+  let startY = 0;
+  window.addEventListener('touchstart', (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', (e) => {
+    // Apenas bloqueia quando o usuário está no topo e puxa para baixo
+    const scroller = document.scrollingElement || document.documentElement;
+    const atTop = (scroller.scrollTop || 0) === 0;
+    if (!atTop) return;
+    if (!e.touches || e.touches.length === 0) return;
+    const y = e.touches[0].clientY;
+    const isPullingDown = y > startY;
+    if (isPullingDown) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
