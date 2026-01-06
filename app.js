@@ -886,9 +886,43 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+
+// ==== PREVENT PULL-TO-REFRESH (evita reload ao puxar para baixo no topo) ====
+function setupPreventPullToRefresh() {
+  let startY = 0;
+
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      startY = e.touches[0].clientY;
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+
+      const y = e.touches[0].clientY;
+      const pullingDown = y > startY + 5;
+
+      const scroller = document.scrollingElement || document.documentElement;
+      const atTop = (scroller?.scrollTop || 0) === 0;
+
+      if (pullingDown && atTop) {
+        e.preventDefault(); // bloqueia o gesto de refresh
+      }
+    },
+    { passive: false }
+  );
+}
+
 // ====== BOOT ======
 document.addEventListener("DOMContentLoaded", async () => {
-  setupFirebaseAuth();
+    setupPreventPullToRefresh();
+setupFirebaseAuth();
   setupLoginButtons();
   setupAdminsLogic();
   setupNavigation();
