@@ -1089,13 +1089,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   navigateTo(last);
 });
 
-// ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
-(function preventPullToRefresh() {
+// ===== FIX ÚNICO: bloqueia pull-to-refresh só quando o scroll é da página,
+// e evita "grudar" no topo/fim dos containers roláveis (WebView) =====
+(function scrollFixUnified() {
   let startY = 0;
+  let activeScroller = null;
+
+  function getScrollableParent(startEl) {
+    let el = startEl;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      const oy = style.overflowY;
+      const canScroll = (oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight;
+      if (canScroll) return el;
+      el = el.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+
+  function nudge(el) {
+    if (!el) return;
+    const max = el.scrollHeight - el.clientHeight;
+    if (max <= 0) return;
+
+    if (el.scrollTop <= 0) el.scrollTop = 1;
+    else if (el.scrollTop >= max) el.scrollTop = max - 1;
+  }
 
   window.addEventListener("touchstart", (e) => {
     if (!e.touches || e.touches.length !== 1) return;
     startY = e.touches[0].clientY;
+    activeScroller = getScrollableParent(e.target);
+    nudge(activeScroller);
   }, { passive: true });
 
   window.addEventListener("touchmove", (e) => {
@@ -1104,47 +1129,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentY = e.touches[0].clientY;
     const diffY = currentY - startY;
 
-    const scroller = document.scrollingElement || document.documentElement;
+    const docScroller = document.scrollingElement || document.documentElement;
+    const scroller = activeScroller || docScroller;
 
-    // só bloqueia quando estiver NO TOPO da página
-    if (scroller.scrollTop === 0 && diffY > 0) {
-      e.preventDefault();
+    // ✅ Bloqueia pull-to-refresh SOMENTE quando o scroll é do documento (página)
+    if (scroller === docScroller && docScroller.scrollTop <= 0 && diffY > 0) {
+      if (e.cancelable) e.preventDefault();
+      return;
     }
+
+    // ✅ Para listas/containers internos (.items-list etc.), não bloqueia o gesto
+    // Só evita ficar exatamente no topo/fim (onde o WebView "gruda")
+    nudge(scroller);
   }, { passive: false });
+
+  window.addEventListener("touchend", () => {
+    nudge(activeScroller);
+    activeScroller = null;
+  }, { passive: true });
 })();
 
-// ==== FIX ÚNICO para listas internas (.items-list) ====
-(function fixItemsListScroll() {
-
-  function apply(scroller) {
-    if (!scroller || scroller.dataset.fixApplied) return;
-    scroller.dataset.fixApplied = "1";
-
-    scroller.addEventListener("touchstart", () => {
-      const max = scroller.scrollHeight - scroller.clientHeight;
-      if (max <= 0) return;
-
-      // evita ficar exatamente no limite
-      if (scroller.scrollTop <= 0) scroller.scrollTop = 1;
-      else if (scroller.scrollTop >= max) scroller.scrollTop = max - 1;
-    }, { passive: true });
-  }
-
-  function applyForActivePage() {
-    document
-      .querySelectorAll(".page.active .items-list")
-      .forEach(apply);
-  }
-
-  window.addEventListener("load", applyForActivePage);
-
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-target]")) {
-      setTimeout(applyForActivePage, 0);
-    }
-  });
-
-})();
 
 
 
