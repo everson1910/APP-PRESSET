@@ -1106,70 +1106,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const scroller = document.scrollingElement || document.documentElement;
 
-    // Se estiver no topo e arrastando para baixo -> bloqueia o "refresh"
-    if (scroller.scrollTop <= 0 && diffY > 0) {
+    // só bloqueia quando estiver NO TOPO da página
+    if (scroller.scrollTop === 0 && diffY > 0) {
       e.preventDefault();
     }
   }, { passive: false });
 })();
-// ===== FIX WebView: evita travar ao puxar no topo/fim de containers com overflow =====
-(function preventWebViewScrollLock() {
-  function applyEdgeNudge(el) {
-    if (!el) return;
 
-    const nudge = () => {
-      // Se estiver exatamente no topo, empurra 1px
-      if (el.scrollTop === 0) el.scrollTop = 1;
+// ==== FIX ÚNICO para listas internas (.items-list) ====
+(function fixItemsListScroll() {
 
-      // Se estiver exatamente no fundo, puxa 1px
-      const max = el.scrollHeight - el.clientHeight;
-      if (max > 0 && el.scrollTop >= max) el.scrollTop = max - 1;
-    };
+  function apply(scroller) {
+    if (!scroller || scroller.dataset.fixApplied) return;
+    scroller.dataset.fixApplied = "1";
 
-    // Ao tocar e ao começar a rolar, garante que não fique no "limite exato"
-    el.addEventListener("touchstart", nudge, { passive: true });
-    el.addEventListener("touchmove", nudge, { passive: true });
+    scroller.addEventListener("touchstart", () => {
+      const max = scroller.scrollHeight - scroller.clientHeight;
+      if (max <= 0) return;
+
+      // evita ficar exatamente no limite
+      if (scroller.scrollTop <= 0) scroller.scrollTop = 1;
+      else if (scroller.scrollTop >= max) scroller.scrollTop = max - 1;
+    }, { passive: true });
   }
 
-  // containers que rolam no seu app (listas e tabela de retiradas)
-  window.addEventListener("load", () => {
-    document.querySelectorAll(".items-list, .withdrawals-table-wrap").forEach(applyEdgeNudge);
-  });
-})();
-// ===== FIX WebView/Chrome Mobile: evita "grudar" no topo/fundo ao puxar e soltar =====
-(function preventScrollEdgeLock() {
-  function getScrollableParent(startEl) {
-    let el = startEl;
-    while (el && el !== document.body) {
-      const style = window.getComputedStyle(el);
-      const oy = style.overflowY;
-      const canScroll = (oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight;
-      if (canScroll) return el;
-      el = el.parentElement;
+  function applyForActivePage() {
+    document
+      .querySelectorAll(".page.active .items-list")
+      .forEach(apply);
+  }
+
+  window.addEventListener("load", applyForActivePage);
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("[data-target]")) {
+      setTimeout(applyForActivePage, 0);
     }
-    // fallback: rolagem da página
-    return document.scrollingElement || document.documentElement;
-  }
+  });
 
-  function nudge(el) {
-    if (!el) return;
-    const max = el.scrollHeight - el.clientHeight;
-    if (max <= 0) return;
-
-    // Evita ficar exatamente em 0 ou exatamente no final (onde o WebView trava)
-    if (el.scrollTop <= 0) el.scrollTop = 1;
-    else if (el.scrollTop >= max) el.scrollTop = max - 1;
-  }
-
-  document.addEventListener("touchstart", (e) => {
-    const el = getScrollableParent(e.target);
-    nudge(el);
-  }, { passive: true });
-
-  document.addEventListener("touchmove", (e) => {
-    const el = getScrollableParent(e.target);
-    nudge(el);
-  }, { passive: true });
 })();
+
 
 
