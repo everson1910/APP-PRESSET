@@ -229,6 +229,8 @@ body {
   overflow-y: auto;
   margin-bottom: 12px;
   padding-right: 4px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .item-row {
@@ -514,5 +516,22 @@ h2.muted-text {
   overflow-wrap: anywhere;      /* evita sobreposição */
   vertical-align: top;          /* alinha conteúdo no topo */
   line-height: 1.25;            /* dá espaço vertical pro texto */
+}
+/* ===== FIX MOBILE SCROLL TRAVANDO NO TOPO ===== */
+html, body {
+  overscroll-behavior-y: contain;
+}
+/* Evita comportamento estranho de overscroll no mobile */
+html, body {
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+}
+/* ===== FIX MÍNIMO: impedir overscroll no MAIN das telas de lista ===== */
+#page-parafusos,
+#page-conexoes,
+#page-ferramentas,
+#page-filtros {
+  overflow-y: hidden !important;
+  overscroll-behavior: contain;
 }
 

@@ -297,11 +297,17 @@ function navigateTo(pageId) {
   const page = document.getElementById(pageId);
   if (page) page.classList.add("active");
 
-  // salva a última página (use localStorage para não perder no reload)
-  try {
-    localStorage.setItem("lastPage", pageId);
-  } catch {}
+  // ===== FIX MÍNIMO: impedir scroll do BODY apenas nas telas com lista =====
+  const LOCK_SCROLL_PAGES = new Set([
+    "page-parafusos",
+    "page-conexoes",
+    "page-ferramentas",
+    "page-filtros"
+  ]);
+
+  document.body.style.overflow = LOCK_SCROLL_PAGES.has(pageId) ? "hidden" : "";
 }
+
 
 // ====== UI (HOME) ======
 function applyProfileToHome() {
@@ -1105,6 +1111,65 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
     }
   }, { passive: false });
+})();
+// ===== FIX WebView: evita travar ao puxar no topo/fim de containers com overflow =====
+(function preventWebViewScrollLock() {
+  function applyEdgeNudge(el) {
+    if (!el) return;
+
+    const nudge = () => {
+      // Se estiver exatamente no topo, empurra 1px
+      if (el.scrollTop === 0) el.scrollTop = 1;
+
+      // Se estiver exatamente no fundo, puxa 1px
+      const max = el.scrollHeight - el.clientHeight;
+      if (max > 0 && el.scrollTop >= max) el.scrollTop = max - 1;
+    };
+
+    // Ao tocar e ao começar a rolar, garante que não fique no "limite exato"
+    el.addEventListener("touchstart", nudge, { passive: true });
+    el.addEventListener("touchmove", nudge, { passive: true });
+  }
+
+  // containers que rolam no seu app (listas e tabela de retiradas)
+  window.addEventListener("load", () => {
+    document.querySelectorAll(".items-list, .withdrawals-table-wrap").forEach(applyEdgeNudge);
+  });
+})();
+// ===== FIX WebView/Chrome Mobile: evita "grudar" no topo/fundo ao puxar e soltar =====
+(function preventScrollEdgeLock() {
+  function getScrollableParent(startEl) {
+    let el = startEl;
+    while (el && el !== document.body) {
+      const style = window.getComputedStyle(el);
+      const oy = style.overflowY;
+      const canScroll = (oy === "auto" || oy === "scroll") && el.scrollHeight > el.clientHeight;
+      if (canScroll) return el;
+      el = el.parentElement;
+    }
+    // fallback: rolagem da página
+    return document.scrollingElement || document.documentElement;
+  }
+
+  function nudge(el) {
+    if (!el) return;
+    const max = el.scrollHeight - el.clientHeight;
+    if (max <= 0) return;
+
+    // Evita ficar exatamente em 0 ou exatamente no final (onde o WebView trava)
+    if (el.scrollTop <= 0) el.scrollTop = 1;
+    else if (el.scrollTop >= max) el.scrollTop = max - 1;
+  }
+
+  document.addEventListener("touchstart", (e) => {
+    const el = getScrollableParent(e.target);
+    nudge(el);
+  }, { passive: true });
+
+  document.addEventListener("touchmove", (e) => {
+    const el = getScrollableParent(e.target);
+    nudge(el);
+  }, { passive: true });
 })();
 
 
