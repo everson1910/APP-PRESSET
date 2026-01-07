@@ -27,7 +27,6 @@ const MASTER_PIN = "1234"; // troque depois
 let currentUser = null;
 let currentProfile = null;
 let estoque = {};
-let lastWithdrawalRows = []; // para exportação
 
 //  controla list do estoque
 let unsubscribeStock = null;
@@ -233,22 +232,6 @@ const CATEGORIES = {
   ]
 };
 
-const ITEM_LABEL_BY_CODE = (() => {
-  const map = {};
-  try {
-    Object.values(CATEGORIES).forEach((arr) => {
-      (arr || []).forEach((it) => {
-        if (it && it.code) map[it.code] = it.label || it.code;
-      });
-    });
-  } catch (e) {}
-  return map;
-})();
-
-function getItemLabel(code) {
-  return ITEM_LABEL_BY_CODE[code] || code;
-}
-
 // ====== HELPERS ======
 function getInputValue(id) {
   const el = document.getElementById(id);
@@ -315,10 +298,8 @@ function applyProfileToHome() {
   const btnAbastecer = document.getElementById("btn-abastecer");
   const btnAdmins = document.getElementById("btn-admins");
 
-  const btnRetiradas = document.getElementById("btn-retiradas");
   if (btnAbastecer) btnAbastecer.style.display = roleIsAdminOrMaster() ? "block" : "none";
   if (btnAdmins) btnAdmins.style.display = roleIsMaster() ? "block" : "none";
-  if (btnRetiradas) btnRetiradas.style.display = roleIsAdminOrMaster() ? "block" : "none";
 }
 
 // ====== AUTH BASE (ANÔNIMO SEMPRE) ======
@@ -538,18 +519,6 @@ function setupNavigation() {
     navigateTo("page-admins");
     renderAdminsList();
   });
-
-
-  const btnRetiradas = document.getElementById("btn-retiradas");
-  btnRetiradas?.addEventListener("click", async () => {
-    if (!currentUser || !roleIsAdminOrMaster()) {
-      showToast("Apenas ADMIN/MASTER pode acessar esta tela.");
-      return;
-    }
-    navigateTo("page-retiradas");
-    await loadWithdrawalsAndRender();
-  });
-
 }
 
 // ====== ADMINS (MASTER) ======
@@ -917,150 +886,6 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// ====== RETIRADAS (ADMIN/MASTER) ======
-function setupWithdrawalsLogic() {
-  const btnExport = document.getElementById("btn-export-retiradas");
-  const btnRefresh = document.getElementById("btn-refresh-retiradas");
-
-  btnExport?.addEventListener("click", () => {
-    if (!currentUser || !roleIsAdminOrMaster()) {
-      showToast("Apenas ADMIN/MASTER pode exportar.");
-      return;
-    }
-    exportWithdrawalsToCSV();
-  });
-
-  btnRefresh?.addEventListener("click", async () => {
-    if (!currentUser || !roleIsAdminOrMaster()) {
-      showToast("Apenas ADMIN/MASTER pode acessar esta tela.");
-      return;
-    }
-    await loadWithdrawalsAndRender();
-  });
-}
-
-function formatDateTime(d) {
-  try {
-    return d.toLocaleString("pt-BR");
-  } catch {
-    return String(d);
-  }
-}
-
-async function loadWithdrawalsAndRender() {
-  const tbody = document.getElementById("withdrawals-tbody");
-  const empty = document.getElementById("withdrawals-empty");
-  if (!tbody) return;
-
-  tbody.innerHTML = "";
-  if (empty) empty.style.display = "none";
-  lastWithdrawalRows = [];
-
-  try {
-    const snap = await db
-      .collection("withdrawals")
-      .orderBy("timestamp", "desc")
-      .limit(300)
-      .get();
-
-    const rows = [];
-
-    snap.forEach((doc) => {
-      const data = doc.data() || {};
-      const ts = data.timestamp?.toDate ? data.timestamp.toDate() : null;
-      const when = ts ? formatDateTime(ts) : "";
-      const nome = data.nome || "";
-      const setor = data.setor || "";
-      const items = Array.isArray(data.items) ? data.items : [];
-
-      items.forEach((it) => {
-        const code = it?.code || "";
-        const label = getItemLabel(code);
-        const qty = Number(it?.quantity ?? 0);
-
-        rows.push({
-          data: when,
-          usuario: nome,
-          setor,
-          item: label,
-          quantidade: qty
-        });
-      });
-    });
-
-    lastWithdrawalRows = rows;
-
-    if (!rows.length) {
-      if (empty) empty.style.display = "block";
-      return;
-    }
-
-    // Render tabela
-    tbody.innerHTML = rows.map((r) => `
-      <tr>
-        <td>${escapeHtml(r.data)}</td>
-        <td>${escapeHtml(r.usuario)}</td>
-        <td>${escapeHtml(r.setor)}</td>
-        <td>${escapeHtml(r.item)}</td>
-        <td>${escapeHtml(String(r.quantidade))}</td>
-      </tr>
-    `).join("");
-
-  } catch (e) {
-    console.error(e);
-    showToast("Erro ao carregar retiradas.");
-  }
-}
-
-function exportWithdrawalsToCSV() {
-  if (!lastWithdrawalRows?.length) {
-    showToast("Não há retiradas para exportar.");
-    return;
-  }
-
-  const header = ["Data", "Usuário", "Setor", "Item", "Quantidade"];
-  const lines = [header.join(";")];
-
-  lastWithdrawalRows.forEach((r) => {
-    const line = [
-      r.data,
-      r.usuario,
-      r.setor,
-      r.item,
-      String(r.quantidade)
-    ].map((v) => String(v ?? "").replaceAll('"', '""')); // escape básico
-
-    // Excel pt-BR geralmente lê melhor com ';'
-    lines.push(line.join(";"));
-  });
-
-  // BOM para Excel abrir UTF-8 corretamente
-  const csv = "\ufeff" + lines.join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `retiradas_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-
 // ====== BOOT ======
 document.addEventListener("DOMContentLoaded", async () => {
   setupFirebaseAuth();
@@ -1070,7 +895,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderAllCategories();
   setupRetirarButtons();
   setupAbastecerLogic();
-  setupWithdrawalsLogic();
 
   // garante auth anônimo logo ao abrir
   try { await ensureAnonAuth(); } catch (e) { console.error(e); }
@@ -1086,25 +910,50 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ==== BLOQUEAR PULL-TO-REFRESH (Android WebView + iOS + PWA) ====
 (function preventPullToRefresh() {
   let startY = 0;
+  let activeScroller = null;
 
-  window.addEventListener("touchstart", (e) => {
-    if (!e.touches || e.touches.length !== 1) return;
-    startY = e.touches[0].clientY;
-  }, { passive: true });
+  function getScrollable(el) {
+    let node = el;
+    while (node && node !== document.body && node !== document.documentElement) {
+      const style = window.getComputedStyle(node);
+      const overflowY = style.overflowY;
+      const isScrollable =
+        (overflowY === "auto" || overflowY === "scroll") &&
+        node.scrollHeight > node.clientHeight + 1;
 
-  window.addEventListener("touchmove", (e) => {
-    if (!e.touches || e.touches.length !== 1) return;
-
-    const currentY = e.touches[0].clientY;
-    const diffY = currentY - startY;
-
-    const scroller = document.scrollingElement || document.documentElement;
-
-    // Se estiver no topo e arrastando para baixo -> bloqueia o "refresh"
-    if (scroller.scrollTop <= 0 && diffY > 0) {
-      e.preventDefault();
+      if (isScrollable) return node;
+      node = node.parentElement;
     }
-  }, { passive: false });
-})();
+    return document.scrollingElement || document.documentElement;
+  }
+
+  window.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      startY = e.touches[0].clientY;
+      activeScroller = getScrollable(e.target);
+    },
+    { passive: true }
+  );
+
+  window.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+
+      const currentY = e.touches[0].clientY;
+      const diffY = currentY - startY;
+
+      const scroller = activeScroller || getScrollable(e.target);
+
+      // Se o usuário estiver no topo do scroll atual e puxar para baixo -> bloqueia o "refresh"
+      if (diffY > 0 && (scroller?.scrollTop ?? 0) <= 0) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+})();;
 
 

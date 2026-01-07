@@ -30,7 +30,7 @@
           <label for="input-setor">Setor</label>
           <select id="input-setor">
             <option value="">Selecione o setor</option>
-            <option value="Presset">Presset</option>
+            <option value="Presset">Preset</option>
             <option value="Torno">Torno</option>
             <option value="Usinagem">Usinagem</option>
             <option value="Qualidade">Qualidade</option>
@@ -89,10 +89,6 @@
       <button id="btn-admins" class="secondary-btn" style="display:none; margin-top: 8px;">
         Gerenciar administradores
       </button>
-      <button id="btn-retiradas" class="secondary-btn" style="display:none; margin-top: 8px;">
-        RETIRADAS
-      </button>
-
     </main>
 
     <!-- TELA - ABASTECER ESTOQUE (SÓ ADMIN/MASTER) -->
@@ -179,38 +175,6 @@
       </div>
       
     </main>
-    <!-- TELA - RETIRADAS (SÓ ADMIN/MASTER) -->
-    <main id="page-retiradas" class="page">
-      <div class="page-header">
-        <button class="back-btn" data-target="page-home">← Voltar</button>
-        <h2>Retiradas</h2>
-      </div>
-
-      <div class="withdrawals-controls">
-        <button id="btn-export-retiradas" class="secondary-btn">Exportar Excel</button>
-        <button id="btn-refresh-retiradas" class="secondary-btn">Atualizar</button>
-      </div>
-
-      <div id="withdrawals-empty" class="muted-text" style="display:none; margin-top: 10px;">
-        Nenhuma retirada encontrada.
-      </div>
-
-      <div class="withdrawals-table-wrap">
-        <table class="withdrawals-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Usuário</th>
-              <th>Setor</th>
-              <th>Item</th>
-              <th>Qtd</th>
-            </tr>
-          </thead>
-          <tbody id="withdrawals-tbody"></tbody>
-        </table>
-      </div>
-    </main>
-
 
     <div id="toast" class="toast"></div>
   </div>

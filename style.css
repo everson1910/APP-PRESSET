@@ -229,6 +229,7 @@ body {
   overflow-y: auto;
   margin-bottom: 12px;
   padding-right: 4px;
+  overscroll-behavior: contain;
 }
 
 .item-row {
@@ -404,59 +405,3 @@ body {
 html, body {
   overscroll-behavior-y: none; /* Chrome/Android e vários WebViews */
 }
-
-
-/* ====== RETIRADAS (ADMIN) ====== */
-.withdrawals-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.withdrawals-table-wrap {
-  margin-top: 12px;
-  overflow: auto;
-  border-radius: 12px;
-  border: 1px solid #d9e2ef;
-  background: #ffffff; /* só adicionado fundo branco para destacar a área */
-}
-
-.withdrawals-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 520px;
-}
-
-.withdrawals-table th,
-.withdrawals-table td {
-  padding: 10px;
-  border-bottom: 1px solid #cfdbee; /* borda um pouco mais escura */
-  text-align: left;
-  font-size: 14px;
-  color: #0a2540; /* texto escuro com mais contraste */
-}
-
-.withdrawals-table th {
-  background: #e6eef8; /* cabeçalho mais visível */
-  font-weight: 700;
-  border-bottom: 2px solid #b9c9e0; /* reforço só no cabeçalho */
-}
-h2.muted-text {
-  color: #001f4d;
-  opacity: 1;
-  font-weight: 700;
-}
-.withdrawals-controls .muted-text {
-  color: #001f4d;   /* mesmo azul do título PRESET */
-  opacity: 1;       /* tira o efeito apagado */
-  font-weight: 700;
-}
-
-
-.muted-text {
-  opacity: 0.7;
-  font-size: 14px;
-  color: #051c33; /* leve ajuste de cor para não ficar “apagado” */
-}
-
