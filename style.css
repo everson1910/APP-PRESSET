@@ -449,6 +449,11 @@ html, body {
   font-weight: 700;
   border-bottom: 2px solid #b9c9e0; /* reforço só no cabeçalho */
 }
+#page-retiradas h2{
+  color: #001f4d !important; /* mesma cor do título PRESET */
+  opacity: 1 !important;
+}
+
 h2.muted-text {
   color: #001f4d;
   opacity: 1;
