@@ -449,11 +449,6 @@ html, body {
   font-weight: 700;
   border-bottom: 2px solid #b9c9e0; /* reforço só no cabeçalho */
 }
-#page-retiradas h2{
-  color: #001f4d !important; /* mesma cor do título PRESET */
-  opacity: 1 !important;
-}
-
 h2.muted-text {
   color: #001f4d;
   opacity: 1;
@@ -494,5 +489,25 @@ h2.muted-text {
   top: auto;
   transform: none;
   margin: 0;          /* evita deslocamentos extras */
+}
+/* ====== FIX MOBILE: tabela de RETIRADAS sem texto sobreposto ====== */
+#page-retiradas .withdrawals-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#page-retiradas .withdrawals-table {
+  table-layout: auto;   /* deixa o navegador calcular melhor no mobile */
+  width: 100%;
+  min-width: 560px;     /* força uma largura mínima e evita esmagar colunas */
+}
+
+#page-retiradas .withdrawals-table th,
+#page-retiradas .withdrawals-table td {
+  white-space: normal;          /* permite quebrar linha */
+  word-break: break-word;       /* quebra palavras longas */
+  overflow-wrap: anywhere;      /* evita sobreposição */
+  vertical-align: top;          /* alinha conteúdo no topo */
+  line-height: 1.25;            /* dá espaço vertical pro texto */
 }
 
