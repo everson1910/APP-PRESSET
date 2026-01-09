@@ -1,0 +1,70 @@
+/*
+  solicitar.css
+  Estilos isolados APENAS para a página "Solicitar item".
+  Tudo aqui é escopado para #page-solicitar-item.
+*/
+
+/* Caixa (equivale à .login-box, mas só nessa página) */
+#page-solicitar-item .login-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #000000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Labels e campos (somente nessa página) */
+#page-solicitar-item .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#page-solicitar-item .form-group label {
+  font-size: 0.9rem;
+  color: #000000;
+}
+
+#page-solicitar-item .form-group input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.95rem;
+}
+
+#page-solicitar-item .form-group input:focus {
+  outline: none;
+  border-color: #000000;
+}
+
+/* Se quiser ajustar o tamanho do botão nesta tela, mexa aqui */
+#page-solicitar-item #btn-enviar-solicitacao {
+  width: 100%;
+}
+/* BOTÃO DA HOME que ABRE a página de solicitar */
+.btn-abrir-solicitar {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #043058;
+}
+
+/* hover */
+.btn-abrir-solicitar:hover {
+  background: #043058;
+  color: #ffffff;
+}
+
+/* clique */
+.btn-abrir-solicitar:active {
+  background: #003b80;
+}
+.btn-abrir-solicitar,
+.btn-abrir-solicitar:focus,
+.btn-abrir-solicitar:active {
+  outline: none !important;
+  box-shadow: none !important;
+}

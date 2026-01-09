@@ -48,7 +48,7 @@ body {
 /* LOGIN */
 
 .login-box {
-  background: #043058;
+  background: #ffffff;
   border-radius: 12px;
   padding: 16px;
   border: 1px solid #301f33;
@@ -94,6 +94,7 @@ body {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
+  border-radius: #000000;
   border: none;
   background: #ffffff;
   color: #000000;
@@ -104,7 +105,7 @@ body {
 }
 
 .primary-btn:hover {
-  background: #041368d5;
+  background: #043058;
   box-shadow: 0 8px 16px rgb(255, 255, 255);
   color: #ffffff;
   transform: translateY(-1px);
@@ -163,10 +164,15 @@ body {
   margin-bottom: 10px;
 }
 
+/* Botão grande dentro do grid (ex: Solicitar item) */
+.buttons-grid #btn-solicitar-item {
+  grid-column: span 2;
+}
+
 .main-btn {
-  background: #043058;
-  border: 1px solid #000000;
-  color: #ffffff;
+  background: #ffffff;
+  border: 1px solid #043058;
+  color: #000000;
   padding: 14px;
   border-radius: 12px;
   font-size: 1rem;
@@ -175,9 +181,9 @@ body {
 }
 
 .main-btn:hover {
-  background: #ffffff;
-  box-shadow: 0 8px 16px rgba(4, 40, 87, 0.8);
-  color: #000000;
+  background: #043058;
+  
+  color: #ffffff;
   transform: translateY(-1px);
 }
 
@@ -186,11 +192,24 @@ body {
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #000000;
-  background: #043058;
-  color: #ffffff;
+  background: #ffffff;
+  color: #000000;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
+  transition: background-color 0.25s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+
+.secondary-btn:hover {
+  color: #ffffff;
+  background-color: #043058;
+  box-shadow: 0 8px 16px rgb(255, 255, 255);
+  transform: translateY(-1px);
+}
+
+.secondary-btn:active {
+  background-color: #003b80;
+  transform: scale(0.98);
 }
 
 /* TOPO DAS TELAS INTERNAS (PARAFUSOS, ETC.) */
@@ -206,7 +225,7 @@ body {
 .top-bar h2 {
   flex: 1;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   color: #043058;
   margin-right: 28px;
 }
@@ -280,7 +299,7 @@ body {
 
 .item-input input:focus {
   outline: none;
-  border-color: #38bdf8;
+  border-color: #ffffff;
 }
 
 /* BOTÃO RETIRAR / ABASTECER */
@@ -289,20 +308,41 @@ body {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
-  border: none;
-  background: #043058;
-  color: #ffffff;
+  border: 1px solid #000000; 
+  background: #ffffff;
+  color: #000000;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  transition: background-color 0.25s ease, box-shadow 0.15s ease, transform 0.08s ease;
 }
 
 .action-btn:hover {
-  background: #fcfcfc;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  color: #000000;
+  background-color: #043058;
+  box-shadow: 0 8px 16px rgba(4, 40, 87, 0.45);
   transform: translateY(-1px);
+  color: #ffffff;
+}
+
+.action-btn:active {
+  background-color: #003b80;
+  transform: scale(0.98);
+}
+
+/* Botão "Solicitar" (tela de solicitação): branco e hover azul */
+.btn-solicitar {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #043058;
+}
+
+.btn-solicitar:hover {
+  background-color: #043058;
+  color: #ffffff;
+}
+
+.btn-solicitar:active {
+  background-color: #003b80;
 }
 
 /* TEXTO SIMPLES NA TELA DE ABASTECER */
@@ -534,4 +574,132 @@ html, body {
   overflow-y: hidden !important;
   overscroll-behavior: contain;
 }
+
+/* ====== AJUSTES: TELA SOLICITAÇÕES (ADM) ====== */
+#page-solicitacoes h2{
+  color: #001f4d !important; /* mesmo azul do título PRESET */
+  opacity: 1 !important;     /* remove efeito apagado */
+}
+
+#page-solicitacoes .page-header{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 12px; /* traz o botão para dentro do card */
+  position: relative;
+}
+
+#page-solicitacoes .page-header .back-btn{
+  position: relative; /* volta para o fluxo do header */
+  left: auto;
+  top: auto;
+  transform: none;
+  margin: 0;
+  padding: 6px 10px;
+}
+
+/* Tabela: evita sobreposição e permite rolagem horizontal */
+#page-solicitacoes .withdrawals-table-wrap{
+  overflow-x: auto;
+}
+
+#page-solicitacoes .withdrawals-table{
+  min-width: 980px;   /* força rolagem lateral quando necessário */
+  table-layout: auto; /* evita colunas esmagadas */
+}
+
+#page-solicitacoes .withdrawals-table th,
+#page-solicitacoes .withdrawals-table td{
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: top;
+}
+/* ===== PADRÃO DO TOPO (telas internas) ===== */
+.top-bar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px; /* espaço do voltar + título + respiro */
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+/* botão voltar sempre no mesmo lugar */
+.top-bar .back-btn {
+  position: static;  /* tira o absolute pra não bagunçar */
+  justify-self: start;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+/* título: funciona para h1/h2/h3/span dentro do top-bar */
+.top-bar h1,
+.top-bar h2,
+.top-bar h3,
+.top-bar .title {
+  justify-self: start;
+  margin: 0;
+  text-align: left;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #043058;
+
+  /* impede sobreposição */
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* “coluna fantasma” do lado direito só pra manter centralização */
+.top-bar::after {
+  content: "";
+}
+/* Inputs e selects brancos na tela de login */
+#page-login input,
+#page-login select {
+  background: #ffffff !important;
+  color: #000000;
+}
+#page-login input:focus,
+#page-login select:focus {
+  background: #ffffff !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(4, 48, 88, 0.25);
+}
+/* Labels do login em preto */
+#page-login label,
+#page-login .form-group label,
+#page-login .input-label {
+  color: #000000;
+  opacity: 1; /* remove aparência apagada */
+}
+/* BOTÃO ENTRAR (login) */
+#page-login button {
+  border: 2px solid #000000;
+}
+/* INPUTS SEMPRE BRANCOS NO LOGIN */
+#page-login input,
+#page-login select,
+#page-login input:focus,
+#page-login input:not(:placeholder-shown),
+#page-login input:valid {
+  background-color: #ffffff !important;
+  color: #000000;
+}
+/* Remove azul do autofill (Chrome) */
+#page-login input:-webkit-autofill,
+#page-login input:-webkit-autofill:hover,
+#page-login input:-webkit-autofill:focus,
+#page-login input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+
+
 

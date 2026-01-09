@@ -1,6 +1,6 @@
 console.log("APP JS carregou ✅");
 
-// 🔥 Firebase config
+// Firebase configuração
 const firebaseConfig = {
   apiKey: "AIzaSyB3_xVNQwXHvDdz_iSVKZcJzdVdwpJczm4",
   authDomain: "app-preset-estoque.firebaseapp.com",
@@ -28,6 +28,7 @@ let currentUser = null;
 let currentProfile = null;
 let estoque = {};
 let lastWithdrawalRows = []; // para exportação
+let lastRequestRows = []; // para exportação (solicitações)
 
 //  controla list do estoque
 let unsubscribeStock = null;
@@ -322,9 +323,15 @@ function applyProfileToHome() {
   const btnAdmins = document.getElementById("btn-admins");
 
   const btnRetiradas = document.getElementById("btn-retiradas");
+  const btnSolicitacoes = document.getElementById("btn-solicitacoes");
+  const btnSolicitarItem = document.getElementById("btn-solicitar-item");
   if (btnAbastecer) btnAbastecer.style.display = roleIsAdminOrMaster() ? "block" : "none";
   if (btnAdmins) btnAdmins.style.display = roleIsMaster() ? "block" : "none";
   if (btnRetiradas) btnRetiradas.style.display = roleIsAdminOrMaster() ? "block" : "none";
+  if (btnSolicitacoes) btnSolicitacoes.style.display = roleIsAdminOrMaster() ? "block" : "none";
+
+  // ✅ Solicitação é para USUÁRIO. Em conta ADMIN/MASTER esconde para não ficar 2 botões parecidos.
+  if (btnSolicitarItem) btnSolicitarItem.style.display = roleIsAdminOrMaster() ? "none" : "block";
 }
 
 // ====== AUTH BASE (ANÔNIMO SEMPRE) ======
@@ -554,6 +561,26 @@ function setupNavigation() {
     }
     navigateTo("page-retiradas");
     await loadWithdrawalsAndRender();
+  });
+
+  const btnSolicitarItem = document.getElementById("btn-solicitar-item");
+  btnSolicitarItem?.addEventListener("click", () => {
+    if (!currentUser || !currentProfile) {
+      showToast("Faça login para solicitar.");
+      return;
+    }
+    prefillSolicitarItemForm();
+    navigateTo("page-solicitar-item");
+  });
+
+  const btnSolicitacoes = document.getElementById("btn-solicitacoes");
+  btnSolicitacoes?.addEventListener("click", async () => {
+    if (!currentUser || !roleIsAdminOrMaster()) {
+      showToast("Apenas ADMIN/MASTER pode acessar esta tela.");
+      return;
+    }
+    navigateTo("page-solicitacoes");
+    await loadRequestsAndRender();
   });
 
 }
@@ -1067,6 +1094,191 @@ function exportWithdrawalsToCSV() {
 }
 
 
+// ====== SOLICITAÇÕES (USUÁRIO + ADMIN/MASTER) ======
+function prefillSolicitarItemForm() {
+  const nome = document.getElementById("req-nome");
+  const setor = document.getElementById("req-setor");
+  const turno = document.getElementById("req-turno");
+  const data = document.getElementById("req-data");
+
+  if (nome) nome.value = currentProfile?.nome || "";
+  if (setor) setor.value = currentProfile?.setor || "";
+  if (turno) turno.value = currentProfile?.turno || "";
+  if (data) {
+    try {
+      data.value = new Date().toLocaleString("pt-BR");
+    } catch {
+      data.value = String(new Date());
+    }
+  }
+}
+
+function setupSolicitarItemLogic() {
+  const btn = document.getElementById("btn-enviar-solicitacao");
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    if (!currentUser || !currentProfile) {
+      showToast("Faça login para solicitar.");
+      return;
+    }
+
+    const nome = getInputValue("req-nome") || (currentProfile?.nome || "");
+    const setor = getInputValue("req-setor") || (currentProfile?.setor || "");
+    const turno = getInputValue("req-turno") || (currentProfile?.turno || "");
+    const supervisor = getInputValue("req-supervisor");
+    const item = getInputValue("req-item");
+
+    if (!nome || !setor || !turno || !supervisor || !item) {
+      showToast("Preencha todos os campos da solicitação.");
+      return;
+    }
+
+    try {
+      await db.collection("solicitacoes").add({
+        uid: currentUser.uid,
+        nome,
+        setor,
+        turno,
+        supervisor,
+        item,
+        status: "PENDENTE",
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      const supEl = document.getElementById("req-supervisor");
+      const itemEl = document.getElementById("req-item");
+      if (supEl) supEl.value = "";
+      if (itemEl) itemEl.value = "";
+      prefillSolicitarItemForm();
+
+      showToast("Solicitação enviada ✅");
+      navigateTo("page-home");
+    } catch (e) {
+      console.error(e);
+      showToast(e?.message || "Erro ao enviar solicitação.");
+    }
+  });
+}
+
+function setupRequestsLogic() {
+  const btnExport = document.getElementById("btn-export-solicitacoes");
+  const btnRefresh = document.getElementById("btn-refresh-solicitacoes");
+
+  btnExport?.addEventListener("click", () => {
+    if (!currentUser || !roleIsAdminOrMaster()) {
+      showToast("Apenas ADMIN/MASTER pode exportar.");
+      return;
+    }
+    exportRequestsToCSV();
+  });
+
+  btnRefresh?.addEventListener("click", async () => {
+    if (!currentUser || !roleIsAdminOrMaster()) {
+      showToast("Apenas ADMIN/MASTER pode acessar esta tela.");
+      return;
+    }
+    await loadRequestsAndRender();
+  });
+}
+
+async function loadRequestsAndRender() {
+  const tbody = document.getElementById("solicitacoes-tbody");
+  const empty = document.getElementById("solicitacoes-empty");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+  if (empty) empty.style.display = "none";
+  lastRequestRows = [];
+
+  try {
+    const snap = await db
+      .collection("solicitacoes")
+      .orderBy("timestamp", "desc")
+      .limit(300)
+      .get();
+
+    const rows = [];
+
+    snap.forEach((doc) => {
+      const data = doc.data() || {};
+      const ts = data.timestamp?.toDate ? data.timestamp.toDate() : null;
+      const when = ts ? formatDateTime(ts) : "";
+
+      rows.push({
+        data: when,
+        usuario: data.nome || "",
+        setor: data.setor || "",
+        turno: data.turno || "",
+        supervisor: data.supervisor || "",
+        item: data.item || "",
+        status: data.status || ""
+      });
+    });
+
+    lastRequestRows = rows;
+
+    if (!rows.length) {
+      if (empty) empty.style.display = "block";
+      return;
+    }
+
+    tbody.innerHTML = rows.map((r) => `
+      <tr>
+        <td>${escapeHtml(r.data)}</td>
+        <td>${escapeHtml(r.usuario)}</td>
+        <td>${escapeHtml(r.setor)}</td>
+        <td>${escapeHtml(r.turno)}</td>
+        <td>${escapeHtml(r.supervisor)}</td>
+        <td>${escapeHtml(r.item)}</td>
+        <td>${escapeHtml(r.status)}</td>
+      </tr>
+    `).join("");
+
+  } catch (e) {
+    console.error(e);
+    showToast(e?.message || "Erro ao carregar solicitações.");
+  }
+}
+
+function exportRequestsToCSV() {
+  if (!lastRequestRows?.length) {
+    showToast("Não há solicitações para exportar.");
+    return;
+  }
+
+  const header = ["Data", "Usuário", "Setor", "Turno", "Supervisor", "Item", "Status"];
+  const lines = [header.join(";")];
+
+  lastRequestRows.forEach((r) => {
+    const line = [
+      r.data,
+      r.usuario,
+      r.setor,
+      r.turno,
+      r.supervisor,
+      r.item,
+      r.status
+    ].map((v) => String(v ?? "").replaceAll('"', '""'));
+
+    lines.push(line.join(";"));
+  });
+
+  const csv = "\ufeff" + lines.join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `solicitacoes_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+
 // ====== BOOT ======
 document.addEventListener("DOMContentLoaded", async () => {
   setupFirebaseAuth();
@@ -1077,6 +1289,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   setupRetirarButtons();
   setupAbastecerLogic();
   setupWithdrawalsLogic();
+  setupSolicitarItemLogic();
+  setupRequestsLogic();
 
   // garante auth anônimo logo ao abrir
   try { await ensureAnonAuth(); } catch (e) { console.error(e); }

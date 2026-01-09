@@ -5,6 +5,8 @@
   <title> PRESET - Estoque</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <!-- Estilos isolados apenas para a página "Solicitar item" -->
+  <link rel="stylesheet" href="solicitar.css" />
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#043058"><!--adicionado essas 3 linhas do meta name para não dar erro no safari-->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,13 +59,15 @@
         <div class="form-group">
           <label for="input-senha">Senha</label>
           <input type="password" id="input-senha" placeholder="Digite sua senha" />
-          <small class="help-text">
-            Apenas administradores conseguem ver o botão <strong>Abastecer estoque</strong>.
-          </small>
         </div>
 
         <button id="btn-login" class="primary-btn">Entrar</button>
         <button id="btn-criar-conta" class="secondary-btn">Criar conta</button>
+
+        <small class="help-text">
+            Apenas administradores conseguem ver o botão <strong>Abastecer estoque</strong>.
+          </small>
+
       </div>
     </main>
 
@@ -84,6 +88,10 @@
         <button class="main-btn" data-target="page-conexoes">Conexões</button>
         <button class="main-btn" data-target="page-ferramentas">Ferramentas</button>
         <button class="main-btn" data-target="page-filtros">Filtros</button>
+        <!-- Solicitar item (abre a página de solicitação) -->
+        <button id="btn-solicitar-item" class="action-btn btn-abrir-solicitar" type="button" data-target="page-solicitar-item">
+          Solicitar item
+        </button>
       </div>
 
       <button id="btn-abastecer" class="secondary-btn" style="display:none;">
@@ -94,7 +102,11 @@
         Gerenciar administradores
       </button>
       <button id="btn-retiradas" class="secondary-btn" style="display:none; margin-top: 8px;">
-        RETIRADAS
+        Retiradas
+      </button>
+
+      <button id="btn-solicitacoes" class="secondary-btn" style="display:none; margin-top: 8px;">
+        Solicitações
       </button>
 
     </main>
@@ -211,6 +223,82 @@
             </tr>
           </thead>
           <tbody id="withdrawals-tbody"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- TELA - SOLICITAR ITEM (USUÁRIO) -->
+    <main id="page-solicitar-item" class="page">
+      <div class="top-bar">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Solicitar item</h2>
+      </div>
+
+      <div class="login-box">
+        <div class="form-group">
+          <label for="req-nome">Nome</label>
+          <input type="text" id="req-nome" placeholder="Seu nome" />
+        </div>
+
+        <div class="form-group">
+          <label for="req-setor">Setor</label>
+          <input type="text" id="req-setor" placeholder="Seu setor" />
+        </div>
+
+        <div class="form-group">
+          <label for="req-turno">Turno</label>
+          <input type="text" id="req-turno" placeholder="Seu turno" />
+        </div>
+
+        <div class="form-group">
+          <label for="req-supervisor">Supervisor responsável</label>
+          <input type="text" id="req-supervisor" placeholder="Nome do supervisor" />
+        </div>
+
+        <div class="form-group">
+          <label for="req-item">Item a ser solicitado Ex: Ferramentas, Parafusos...</label>
+          <input type="text" id="req-item" placeholder="Descreva o item" />
+        </div>
+
+        <div class="form-group">
+          <label for="req-data">Data</label>
+          <input type="text" id="req-data" readonly />
+        </div>
+
+        <button id="btn-enviar-solicitacao" class="action-btn btn-solicitar">Solicitar</button>
+      </div>
+    </main>
+
+    <!-- TELA - SOLICITAÇÕES (SÓ ADMIN/MASTER) -->
+    <main id="page-solicitacoes" class="page">
+      <div class="page-header">
+        <button class="back-btn" data-target="page-home">◀</button>
+        <h2>Solicitações</h2>
+      </div>
+
+      <div class="withdrawals-controls">
+        <button id="btn-export-solicitacoes" class="secondary-btn">Exportar Excel</button>
+        <button id="btn-refresh-solicitacoes" class="secondary-btn">Atualizar</button>
+      </div>
+
+      <div id="solicitacoes-empty" class="muted-text" style="display:none; margin-top: 10px;">
+        Nenhuma solicitação encontrada.
+      </div>
+
+      <div class="withdrawals-table-wrap">
+        <table class="withdrawals-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Usuário</th>
+              <th>Setor</th>
+              <th>Turno</th>
+              <th>Supervisor</th>
+              <th>Item</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="solicitacoes-tbody"></tbody>
         </table>
       </div>
     </main>
