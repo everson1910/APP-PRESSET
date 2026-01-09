@@ -219,18 +219,19 @@ const CATEGORIES = {
     { "code": "FR023", "label": "CHAVE DE FENDA" },
     { "code": "FR024", "label": "CHAVE PHILIPS" },
     { "code": "FR025", "label": "DISCO DE CORTE" },
-    { "code": "FR026", "label": "FLAPS" },
-    { "code": "FR027", "label": "JOGO DE ALEN LONGA" },
-    { "code": "FR028", "label": "JOGO DE ALEN CURTA" },
-    { "code": "FR029", "label": "LIMA MURÇA" },
-    { "code": "FR030", "label": "LIMA BASTARDA" },
-    { "code": "FR031", "label": "LIMA REDONDA" },
-    { "code": "FR032", "label": "LIMA DIAMANTADA PARALELA" },
-    { "code": "FR033", "label": "LIMA DIAMANTADA REDONDA" },
-    { "code": "FR034", "label": "LIMA DIAMANTADA TRIÂNGULAR" },
-    { "code": "FR035", "label": "LIMA DIAMANTADA MEIA-CANA" },
-    { "code": "FR036", "label": "SERRA PARA ARCO" },
-    { "code": "FR037", "label": "TRENA" }
+    { "code": "FR026", "label": "ESCAREADOR" },
+    { "code": "FR027", "label": "FLAPS" },
+    { "code": "FR028", "label": "JOGO DE ALEN LONGA" },
+    { "code": "FR029", "label": "JOGO DE ALEN CURTA" },
+    { "code": "FR030", "label": "LIMA MURÇA" },
+    { "code": "FR031", "label": "LIMA BASTARDA" },
+    { "code": "FR032", "label": "LIMA REDONDA" },
+    { "code": "FR033", "label": "LIMA DIAMANTADA PARALELA" },
+    { "code": "FR034", "label": "LIMA DIAMANTADA REDONDA" },
+    { "code": "FR035", "label": "LIMA DIAMANTADA TRIÂNGULAR" },
+    { "code": "FR036", "label": "LIMA DIAMANTADA MEIA-CANA" },
+    { "code": "FR037", "label": "SERRA PARA ARCO" },
+    { "code": "FR038", "label": "TRENA" }
   ]
 };
 
