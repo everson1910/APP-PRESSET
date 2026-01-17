@@ -17,7 +17,7 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ====== CONFIG ======
-const LOW_STOCK_THRESHOLD = 10;
+const LOW_STOCK_THRESHOLD = 1;
 
 // MASTER (por NOME + PIN)
 const MASTER_NAMES = ["Everson Oliveira", "Everson", "MASTER"];
