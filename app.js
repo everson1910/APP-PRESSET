@@ -205,7 +205,9 @@ const CATEGORIES = {
     { "code": "FR009", "label": "ALLEN 10" },
     { "code": "FR010", "label": "ALICATE DE BICO" },
     { "code": "FR011", "label": "ALICATE DE PRESSÃO" },
-    { "code": "FR012", "label": "ALICATE DE CORTE" },
+    { "code": "FR012", "label": "ALICATE DE ANEL INTERNO" },
+    { "code": "FR039", "label": "ALICATE DE ANEL EXTERNO" },
+    { "code": "FR040", "label": "ALICATE DE CORTE" },
     { "code": "FR013", "label": "CHAVE T6" },
     { "code": "FR014", "label": "CHAVE T7" },
     { "code": "FR015", "label": "CHAVE T8" },
@@ -220,6 +222,7 @@ const CATEGORIES = {
     { "code": "FR024", "label": "CHAVE PHILIPS" },
     { "code": "FR025", "label": "DISCO DE CORTE" },
     { "code": "FR026", "label": "ESCAREADOR" },
+    { "code": "FR041", "label": "ESTILETE" },
     { "code": "FR027", "label": "FLAPS" },
     { "code": "FR028", "label": "JOGO DE ALEN LONGA" },
     { "code": "FR029", "label": "JOGO DE ALEN CURTA" },
@@ -230,6 +233,8 @@ const CATEGORIES = {
     { "code": "FR034", "label": "LIMA DIAMANTADA REDONDA" },
     { "code": "FR035", "label": "LIMA DIAMANTADA TRIÂNGULAR" },
     { "code": "FR036", "label": "LIMA DIAMANTADA MEIA-CANA" },
+    { "code": "FR042", "label": "PONTEIRA FENDA" },
+    { "code": "FR043", "label": "PONTEIRA PHILLIPS" },
     { "code": "FR037", "label": "SERRA PARA ARCO" },
     { "code": "FR038", "label": "TRENA" }
   ]
